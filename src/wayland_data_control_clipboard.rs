@@ -165,14 +165,18 @@ impl WaylandDataControlClipboardContext {
 		}
 	}
 
-	#[cfg(feature = "image-data")]
-	pub fn set_image(&mut self, image: ImageData) -> Result<(), Error> {
+	pub fn set_image_raw(&mut self, image: Vec<u8>) -> Result<(), Error> {
 		use wl_clipboard_rs::copy::MimeType;
 
-		let image = encode_as_png(&image)?;
 		let opts = Options::new();
 		let source = Source::Bytes(image.into());
 		opts.copy(source, MimeType::Specific(MIME_PNG.into())).map_err(into_unknown)?;
+
 		Ok(())
+	}
+
+	#[cfg(feature = "image-data")]
+	pub fn set_image(&mut self, image: ImageData) -> Result<(), Error> {
+		self.set_image_raw(encode_as_png(&image)?)
 	}
 }

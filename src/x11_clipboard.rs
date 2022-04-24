@@ -854,11 +854,14 @@ impl X11ClipboardContext {
 		Ok(self.inner.read(&formats, LinuxClipboardKind::Clipboard)?.bytes)
 	}
 
+	pub fn set_image_raw(&self, image: Vec<u8>) -> Result<()> {
+		let data = ClipboardData { bytes: image, format: self.inner.atoms.PNG_MIME };
+		self.inner.write(data, LinuxClipboardKind::Clipboard)
+	}
+
 	#[cfg(feature = "image-data")]
 	pub fn set_image(&self, image: ImageData) -> Result<()> {
-		let encoded = encode_as_png(&image)?;
-		let data = ClipboardData { bytes: encoded, format: self.inner.atoms.PNG_MIME };
-		self.inner.write(data, LinuxClipboardKind::Clipboard)
+		self.set_image_raw(encode_as_png(&image)?)
 	}
 }
 

@@ -103,6 +103,10 @@ impl Clipboard {
 	pub fn set_image(&mut self, image: ImageData) -> Result<(), Error> {
 		self.platform.set_image(image)
 	}
+
+	pub fn set_image_raw(&mut self, image: Vec<u8>) -> Result<(), Error> {
+		self.platform.set_image_raw(image)
+	}
 }
 
 /// All tests grouped in one because the windows clipboard cannot be open on

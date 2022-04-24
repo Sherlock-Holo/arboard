@@ -227,4 +227,13 @@ impl LinuxClipboard {
 			Self::WlDataControl(cb) => cb.set_image(image),
 		}
 	}
+
+	pub fn set_image_raw(&mut self, image: Vec<u8>) -> Result<(), Error> {
+		match self {
+			Self::X11(cb) => cb.set_image_raw(image),
+
+			#[cfg(feature = "wayland-data-control")]
+			Self::WlDataControl(cb) => cb.set_image_raw(image),
+		}
+	}
 }
