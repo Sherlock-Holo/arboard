@@ -2,10 +2,10 @@
 use std::{cell::RefCell, rc::Rc};
 
 #[cfg(feature = "wayland-data-control")]
-use crate::wayland_data_control_clipboard::WaylandDataControlClipboardContext;
-#[cfg(feature = "wayland-data-control")]
 use log::{info, warn};
 
+#[cfg(feature = "wayland-data-control")]
+use crate::wayland_data_control_clipboard::WaylandDataControlClipboardContext;
 #[cfg(feature = "image-data")]
 use crate::ImageData;
 use crate::{x11_clipboard::X11ClipboardContext, Error};
@@ -199,6 +199,15 @@ impl LinuxClipboard {
 
 			#[cfg(feature = "wayland-data-control")]
 			Self::WlDataControl(cb) => cb.get_image(),
+		}
+	}
+
+	pub fn get_image_raw(&mut self) -> Result<Vec<u8>, Error> {
+		match self {
+			Self::X11(cb) => cb.get_image_raw(),
+
+			#[cfg(feature = "wayland-data-control")]
+			Self::WlDataControl(cb) => cb.get_image_raw(),
 		}
 	}
 

@@ -11,11 +11,16 @@ and conditions of the chosen license apply to this file.
 #![crate_name = "arboard"]
 #![crate_type = "lib"]
 
-mod common;
 pub use common::Error;
 #[cfg(feature = "image-data")]
 pub use common::ImageData;
+#[cfg(all(
+	unix,
+	not(any(target_os = "macos", target_os = "android", target_os = "emscripten")),
+))]
+pub use common_linux::{ClipboardExtLinux, LinuxClipboardKind};
 
+mod common;
 #[cfg(all(unix, not(any(target_os = "macos", target_os = "android", target_os = "emscripten")),))]
 pub(crate) mod common_linux;
 
@@ -41,12 +46,6 @@ type PlatformClipboard = common_linux::LinuxClipboard;
 type PlatformClipboard = windows_clipboard::WindowsClipboardContext;
 #[cfg(target_os = "macos")]
 type PlatformClipboard = osx_clipboard::OSXClipboardContext;
-
-#[cfg(all(
-	unix,
-	not(any(target_os = "macos", target_os = "android", target_os = "emscripten")),
-))]
-pub use common_linux::{ClipboardExtLinux, LinuxClipboardKind};
 
 /// The OS independent struct for accessing the clipboard.
 ///
@@ -87,6 +86,10 @@ impl Clipboard {
 	#[cfg(feature = "image-data")]
 	pub fn get_image(&mut self) -> Result<ImageData<'static>, Error> {
 		self.platform.get_image()
+	}
+
+	pub fn get_image_raw(&mut self) -> Result<Vec<u8>, Error> {
+		self.platform.get_image_raw()
 	}
 
 	/// Places an image to the clipboard.

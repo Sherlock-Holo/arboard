@@ -141,6 +141,30 @@ impl WaylandDataControlClipboardContext {
 		}
 	}
 
+	pub fn get_image_raw(&mut self) -> Result<Vec<u8>, Error> {
+		use wl_clipboard_rs::paste::MimeType;
+
+		let result = get_contents(
+			paste::ClipboardType::Regular,
+			Seat::Unspecified,
+			MimeType::Specific(MIME_PNG),
+		);
+		match result {
+			Ok((mut pipe, _mime_type)) => {
+				let mut buffer = vec![];
+				pipe.read_to_end(&mut buffer).map_err(into_unknown)?;
+
+				Ok(buffer)
+			}
+
+			Err(PasteError::ClipboardEmpty) | Err(PasteError::NoMimeType) => {
+				Err(Error::ContentNotAvailable)
+			}
+
+			Err(err) => return Err(Error::Unknown { description: format!("{}", err) }),
+		}
+	}
+
 	#[cfg(feature = "image-data")]
 	pub fn set_image(&mut self, image: ImageData) -> Result<(), Error> {
 		use wl_clipboard_rs::copy::MimeType;

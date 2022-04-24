@@ -848,6 +848,12 @@ impl X11ClipboardContext {
 		Ok(image_data)
 	}
 
+	pub fn get_image_raw(&self) -> Result<Vec<u8>> {
+		let formats = [self.inner.atoms.PNG_MIME];
+
+		Ok(self.inner.read(&formats, LinuxClipboardKind::Clipboard)?.bytes)
+	}
+
 	#[cfg(feature = "image-data")]
 	pub fn set_image(&self, image: ImageData) -> Result<()> {
 		let encoded = encode_as_png(&image)?;
