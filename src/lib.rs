@@ -88,6 +88,14 @@ impl Clipboard {
 		self.platform.get_image()
 	}
 
+	#[cfg(target_os = "linux")]
+	/// Fetches image data from the clipboard, and returns the raw image data.
+	///
+	/// The raw data output format is depending on the platform is the following:
+	///
+	/// - On macOS: `NSImage` object
+	/// - On Linux: PNG, under the atom `image/png`
+	/// - On Windows: In order of priority `CF_DIB` and `CF_BITMAP`
 	pub fn get_image_raw(&mut self) -> Result<Vec<u8>, Error> {
 		self.platform.get_image_raw()
 	}
@@ -104,6 +112,8 @@ impl Clipboard {
 		self.platform.set_image(image)
 	}
 
+	#[cfg(target_os = "linux")]
+	/// Places an raw image data to the clipboard.
 	pub fn set_image_raw(&mut self, image: Vec<u8>) -> Result<(), Error> {
 		self.platform.set_image_raw(image)
 	}

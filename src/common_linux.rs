@@ -202,6 +202,11 @@ impl LinuxClipboard {
 		}
 	}
 
+	/// Fetches image data from the clipboard, and returns the raw image data.
+	///
+	/// Any image data placed on the clipboard with `set_image` will be possible read back, using
+	/// this function. However it's of not guaranteed that an image placed on the clipboard by any
+	/// other application will be of a supported format.
 	pub fn get_image_raw(&mut self) -> Result<Vec<u8>, Error> {
 		match self {
 			Self::X11(cb) => cb.get_image_raw(),
@@ -228,6 +233,7 @@ impl LinuxClipboard {
 		}
 	}
 
+	/// Places an raw image data to the clipboard.
 	pub fn set_image_raw(&mut self, image: Vec<u8>) -> Result<(), Error> {
 		match self {
 			Self::X11(cb) => cb.set_image_raw(image),
